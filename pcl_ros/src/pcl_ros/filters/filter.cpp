@@ -123,10 +123,9 @@ pcl_ros::Filter::subscribe()
   // If we're supposed to look for PointIndices (indices)
   if (use_indices_) {
     // Subscribe to the input using a filter
-    auto sensor_qos_profile = rclcpp::SensorDataQoS().keep_last(max_queue_size_);
-    sub_input_filter_.subscribe(this, "input", sensor_qos_profile);
-    sub_indices_filter_.subscribe(this, "indices", sensor_qos_profile);
-
+    auto sensor_qos_profile = rclcpp::QoS(rclcpp::KeepLast(max_queue_size_)).best_effort().durability_volatile();
+    sub_input_filter_.subscribe(shared_from_this(), "input" /* , sensor_qos_profile */);
+    sub_indices_filter_.subscribe(shared_from_this(), "indices" /* , sensor_qos_profile */);
     if (approximate_sync_) {
       sync_input_indices_a_ =
         std::make_shared<message_filters::Synchronizer<sync_policies::ApproximateTime<PointCloud2,
