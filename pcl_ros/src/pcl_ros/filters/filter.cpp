@@ -182,11 +182,10 @@ pcl_ros::Filter::Filter(std::string node_name, const rclcpp::NodeOptions & optio
 void
 pcl_ros::Filter::createPublishers()
 {
-  auto pub_options = rclcpp::PublisherOptions();
-  pub_options.event_callbacks.matched_callback = [this](rclcpp::MatchedInfo & /*info*/) {
-      if (pub_output_->get_subscription_count() == 0) {
-        unsubscribe();
-      } else {
+  static auto timer = this->create_wall_timer(
+    std::chrono::seconds(1),
+    [&](){
+      if (pub_output_->get_subscription_count() > 0) {
         if (use_indices_) {
           if (!sub_input_filter_.getSubscriber() || !sub_indices_filter_.getSubscriber()) {
             subscribe();
@@ -197,8 +196,11 @@ pcl_ros::Filter::createPublishers()
           }
         }
       }
-    };
-  pub_output_ = create_publisher<PointCloud2>("output", max_queue_size_, pub_options);
+      else {
+        unsubscribe();
+      }
+    });
+  pub_output_ = create_publisher<PointCloud2>("output", max_queue_size_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
