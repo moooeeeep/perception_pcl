@@ -181,7 +181,7 @@ pcl_ros::Filter::Filter(std::string node_name, const rclcpp::NodeOptions & optio
 void
 pcl_ros::Filter::createPublishers()
 {
-  static auto timer = this->create_wall_timer(
+  pub_timer_ = this->create_wall_timer(
     std::chrono::seconds(1),
     [&](){
       if (pub_output_->get_subscription_count() > 0) {

@@ -146,6 +146,9 @@ private:
     PointIndices>>> sync_input_indices_e_;
   std::shared_ptr<message_filters::Synchronizer<sync_policies::ApproximateTime<PointCloud2,
     PointIndices>>> sync_input_indices_a_;
+  /** \brief Timer for checking subscribers
+   */
+  rclcpp::TimerBase::SharedPtr pub_timer_;
 
   /** \brief Parameter callback
     * \param params parameter values to set
